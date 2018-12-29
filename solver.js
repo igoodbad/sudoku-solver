@@ -24,11 +24,9 @@ function sudokuSolver() {
         [, , 4, 6, 9, , 1, 7, 3],
         [, , , , , 1, , , 4]
     ];
-    console.log(template);
     let columns = [];
     // Section 1, Clean mistake values
     let rows = cleanRows(template);
-    console.log(rows);
     //Section 2, Map values (coordenate: value)
     let matrix = new Map();
     for (let i in rows) {
@@ -52,6 +50,7 @@ function sudokuSolver() {
         rows = updateTemplate(rows, matrix);
     }
     console.log(rows);
+    return rows;
 }
 
 function updateTemplate(dataTemplate, dataMatrix) {
