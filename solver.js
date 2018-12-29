@@ -1,8 +1,8 @@
 // Declare a unique numbers possibles
 const uniques = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-let count = 0;
+
 function sudokuSolver() {
-    let template = [
+    /*let template = [
         [5, 3, , , 7, , , ,],
         [6, , , 1, 9, 5, , ,],
         [, 9, 8, , , , , 6,],
@@ -12,46 +12,60 @@ function sudokuSolver() {
         [, 6, , , , , 2, 8,],
         [, , , 4, 1, 9, , , 5],
         [, , , , 8, , , 7, 9]
+    ];*/
+    let template = [
+        [8, 7, 6, 9, , , , ,],
+        [, 1, , , , 6, , ,],
+        [, 4, , 3, , 5, 8, ,],
+        [4, , , , , , 2, 1, ],
+        [, 9, , 5, , , , , ],
+        [, 5, , , 4, , 3, , 6],
+        [, 2, 9, , , , , ,8],
+        [, , 4, 6, 9, , 1, 7, 3],
+        [, , , , , 1, , , 4]
     ];
+    console.log(template);
     let columns = [];
     // Section 1, Clean mistake values
     let rows = cleanRows(template);
-    // Section 2, Verify exist 0's
-    let unsolved = checkSolved(template);
-    for (; count < 100; count++) {
-        console.log(count);
+    console.log(rows);
+    //Section 2, Map values (coordenate: value)
+    let matrix = new Map();
+    for (let i in rows) {
+        for (let ii in rows[i]) {
+            matrix.set((i + "" + ii), rows[i][ii]);
+        }
+    }
+    for (let a = 0; a < 10; a++) {
+        
         // Section 2, Generate array of columns
         columns = generateColumns(rows);
-        //Section 3, Search possible matches
+        //Section 4, Search possible matches
         for (let i = 0; i < 9; i++) {
             for (let ii = 0; ii < 9; ii++) {
                 if (rows[i][ii] === 0) {
                     let simplyPossibles = simplifyPossibles(possibles(rows[i]), possibles(columns[ii]), possibles(getGrid(i, ii, rows)));
-                    if (simplyPossibles.length === 1) {
-                        template[i][ii] = simplyPossibles[0];
-                    }
+                    matrix.set((i + "" + ii), (simplyPossibles.length > 1 ? simplyPossibles : simplyPossibles[0]));
                 }
             }
         }
-        unsolved = checkSolved(template);
+        rows = updateTemplate(rows, matrix);
     }
-    console.log(template);
+    console.log(rows);
 }
 
-function checkSolved(dataMatrix) {
-    let status = true;
-    for (let i = 0; i < 9; i++) {
-        for (let ii = 0; ii < 9; ii++) {
-            if (dataMatrix[i][ii] === 0) {
-                status = false;
-                break;
+function updateTemplate(dataTemplate, dataMatrix) {
+    for (let value of dataMatrix) {
+        let axis = Array.from(value[0]);
+        if (isNaN(value[1])) {
+            if (value[1].length === 1) {
+                dataTemplate[axis[0]][axis[1]] = value[1][0];
             }
-        }
-        if (status === false) {
-            break;
+        } else {
+            dataTemplate[axis[0]][axis[1]] = value[1];
         }
     }
-    return status;
+    return dataTemplate;
 }
 
 function cleanRows(dataMatrix) {
