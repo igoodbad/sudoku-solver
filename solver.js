@@ -1,6 +1,6 @@
 // Declare a unique numbers possibles
 const uniques = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
+let count = 0;
 function sudokuSolver() {
     let template = [
         [5, 3, , , 7, , , ,],
@@ -13,28 +13,45 @@ function sudokuSolver() {
         [, , , 4, 1, 9, , , 5],
         [, , , , 8, , , 7, 9]
     ];
-
+    let columns = [];
     // Section 1, Clean mistake values
     let rows = cleanRows(template);
-    // Section 2, Generate array of columns
-    let columns = generateColumns(rows);
-    //Section 3, Map values (coordenate: value)
-    /*let matrix = new Map();
-    for (let i in rows) {
-        for (let ii in rows[i]) {
-            matrix.set((i + "" + ii), rows[i][ii]);
-        }
-    }*/
-    //Section 4, Search possible matches
-    for (let i = 0; i < 9; i++) {
-        for (let ii = 0; ii < 9; ii++) {
-            if (rows[i][ii] === 0) {
-                let simplyPossibles = simplifyPossibles(possibles(rows[i]), possibles(columns[ii]), possibles(getGrid(i, ii, rows)));
-                matrix.set((i+""+ii),(simplyPossibles.length > 1 ? simplyPossibles:simplyPossibles[0]));
+    // Section 2, Verify exist 0's
+    let unsolved = checkSolved(template);
+    for (; count < 100; count++) {
+        console.log(count);
+        // Section 2, Generate array of columns
+        columns = generateColumns(rows);
+        //Section 3, Search possible matches
+        for (let i = 0; i < 9; i++) {
+            for (let ii = 0; ii < 9; ii++) {
+                if (rows[i][ii] === 0) {
+                    let simplyPossibles = simplifyPossibles(possibles(rows[i]), possibles(columns[ii]), possibles(getGrid(i, ii, rows)));
+                    if (simplyPossibles.length === 1) {
+                        template[i][ii] = simplyPossibles[0];
+                    }
+                }
             }
         }
+        unsolved = checkSolved(template);
     }
-    console.log(matrix.entries());
+    console.log(template);
+}
+
+function checkSolved(dataMatrix) {
+    let status = true;
+    for (let i = 0; i < 9; i++) {
+        for (let ii = 0; ii < 9; ii++) {
+            if (dataMatrix[i][ii] === 0) {
+                status = false;
+                break;
+            }
+        }
+        if (status === false) {
+            break;
+        }
+    }
+    return status;
 }
 
 function cleanRows(dataMatrix) {
